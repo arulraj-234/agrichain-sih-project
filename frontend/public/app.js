@@ -4,11 +4,45 @@ const API_URL = '/api';
 // State management
 let currentSection = 'dashboard';
 
+// Local storage key for products
+const LOCAL_PRODUCTS_KEY = 'agri_supply_chain_products';
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    initializeLocalStorage();
     loadDashboard();
     checkNetworkStatus();
 });
+
+// Initialize local storage if empty
+function initializeLocalStorage() {
+    if (!localStorage.getItem(LOCAL_PRODUCTS_KEY)) {
+        localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
+    }
+}
+
+// Get products from local storage
+function getLocalProducts() {
+    try {
+        return JSON.parse(localStorage.getItem(LOCAL_PRODUCTS_KEY) || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+// Save product to local storage
+function saveProductLocally(product) {
+    const products = getLocalProducts();
+    products.push(product);
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
+}
+
+// Clear local products (useful for testing)
+function clearLocalProducts() {
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
+    loadProducts();
+    alert('Local products cleared!');
+}
 
 // Navigation
 function showSection(sectionId) {
@@ -43,10 +77,12 @@ function showSection(sectionId) {
 // Dashboard functions
 async function loadDashboard() {
     try {
-        // Load products count
+        // Load products count (server + local)
         const productsRes = await fetch(`${API_URL}/products-mock-sample`);
         const productsData = await productsRes.json();
-        document.getElementById('totalProducts').textContent = productsData.count || 0;
+        const localProducts = getLocalProducts();
+        const totalProducts = (productsData.count || 0) + localProducts.length;
+        document.getElementById('totalProducts').textContent = totalProducts;
         
         // Load stakeholders count
         const stakeholdersRes = await fetch(`${API_URL}/stakeholders-mock-sample`);
@@ -80,15 +116,28 @@ async function checkNetworkStatus() {
 
 // Products functions
 async function loadProducts() {
+    const productsGrid = document.getElementById('productsGrid');
+    productsGrid.innerHTML = '';
+    
     try {
+        // Load mock products from server
         const response = await fetch(`${API_URL}/products-mock-sample`);
         const data = await response.json();
         
-        const productsGrid = document.getElementById('productsGrid');
-        productsGrid.innerHTML = '';
+        // Get locally stored products
+        const localProducts = getLocalProducts();
         
-        if (data.data && data.data.length > 0) {
-            data.data.forEach(product => {
+        // Combine server products with local products
+        const allProducts = [...(data.data || []), ...localProducts];
+        
+        // Update dashboard count
+        const totalCount = allProducts.length;
+        if (document.getElementById('totalProducts')) {
+            document.getElementById('totalProducts').textContent = totalCount;
+        }
+        
+        if (allProducts.length > 0) {
+            allProducts.forEach(product => {
                 const productCard = createProductCard(product);
                 productsGrid.appendChild(productCard);
             });
@@ -97,7 +146,16 @@ async function loadProducts() {
         }
     } catch (error) {
         console.error('Error loading products:', error);
-        document.getElementById('productsGrid').innerHTML = '<p>Error loading products</p>';
+        // If server fails, still show local products
+        const localProducts = getLocalProducts();
+        if (localProducts.length > 0) {
+            localProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                productsGrid.appendChild(productCard);
+            });
+        } else {
+            productsGrid.innerHTML = '<p>Error loading products from server. No local products found.</p>';
+        }
     }
 }
 
@@ -171,10 +229,14 @@ async function createProduct(event) {
         const data = await response.json();
         
         if (data.success) {
+            // Save product to local storage
+            const newProduct = data.data;
+            saveProductLocally(newProduct);
+            
             // Show success message with demo note
             const message = data.message || 'Product created successfully!';
             const note = data.note ? '\n\nNote: ' + data.note : '';
-            alert(message + note);
+            alert(message + note + '\n\nProduct saved locally and will persist in your browser.');
             
             toggleProductForm();
             loadProducts();
