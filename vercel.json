@@ -1,16 +1,22 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "frontend/public/**",
-      "use": "@vercel/static"
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 10
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/frontend/public/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/public/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/public/$1"
     }
-  ],
-  "outputDirectory": "frontend/public"
+  ]
 }

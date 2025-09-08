@@ -1,5 +1,5 @@
-// API Base URL
-const API_URL = 'http://localhost:3001/api';
+// API Base URL - uses relative path for deployment
+const API_URL = '/api';
 
 // State management
 let currentSection = 'dashboard';
@@ -44,12 +44,12 @@ function showSection(sectionId) {
 async function loadDashboard() {
     try {
         // Load products count
-        const productsRes = await fetch(`${API_URL}/products/mock/sample`);
+        const productsRes = await fetch(`${API_URL}/products-mock-sample`);
         const productsData = await productsRes.json();
         document.getElementById('totalProducts').textContent = productsData.count || 0;
         
         // Load stakeholders count
-        const stakeholdersRes = await fetch(`${API_URL}/stakeholders/mock/sample`);
+        const stakeholdersRes = await fetch(`${API_URL}/stakeholders-mock-sample`);
         const stakeholdersData = await stakeholdersRes.json();
         document.getElementById('totalStakeholders').textContent = stakeholdersData.count || 0;
         
@@ -81,7 +81,7 @@ async function checkNetworkStatus() {
 // Products functions
 async function loadProducts() {
     try {
-        const response = await fetch(`${API_URL}/products/mock/sample`);
+        const response = await fetch(`${API_URL}/products-mock-sample`);
         const data = await response.json();
         
         const productsGrid = document.getElementById('productsGrid');
@@ -160,7 +160,7 @@ async function createProduct(event) {
     };
     
     try {
-        const response = await fetch(`${API_URL}/products/create`, {
+        const response = await fetch(`${API_URL}/products-create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -187,7 +187,7 @@ async function createProduct(event) {
 // Stakeholders functions
 async function loadStakeholders() {
     try {
-        const response = await fetch(`${API_URL}/stakeholders/mock/sample`);
+        const response = await fetch(`${API_URL}/stakeholders-mock-sample`);
         const data = await response.json();
         
         const stakeholdersGrid = document.getElementById('stakeholdersGrid');
