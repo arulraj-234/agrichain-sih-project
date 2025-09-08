@@ -1,3 +1,5 @@
+import { addProduct, getProductsCount } from './_products-store.js';
+
 // Mock registered stakeholders for demo
 const registeredStakeholders = new Set([
     'demo-farmer-1',
@@ -57,13 +59,18 @@ export default function handler(req, res) {
         farmerName: 'Demo Farmer'
     };
 
+    // Add product to storage
+    addProduct(newProduct);
+    
     // Log for demo purposes
-    console.log('Product created:', newProduct);
+    console.log('Product created and stored:', newProduct);
+    console.log('Total products in storage:', getProductsCount());
 
     res.status(201).json({
         success: true,
         message: 'Product created successfully! (Demo Mode - Auto-registered as Farmer)',
         data: newProduct,
+        totalProducts: getProductsCount(),
         note: 'In production, you would need to be a registered stakeholder with a blockchain wallet.'
     });
 }
