@@ -7,25 +7,53 @@ let currentSection = 'dashboard';
 // Local storage key for products
 const LOCAL_PRODUCTS_KEY = 'agri_supply_chain_products';
 
+// Initialize local storage immediately
+(function() {
+    if (typeof(Storage) !== 'undefined') {
+        if (!localStorage.getItem(LOCAL_PRODUCTS_KEY)) {
+            localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
+            console.log('LocalStorage initialized with empty products array');
+        } else {
+            console.log('LocalStorage already has products:', localStorage.getItem(LOCAL_PRODUCTS_KEY));
+        }
+    } else {
+        console.error('LocalStorage not supported in this browser');
+    }
+})();
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     initializeLocalStorage();
     loadDashboard();
     checkNetworkStatus();
+    // Make functions globally available for console access
+    window.getLocalProducts = getLocalProducts;
+    window.saveProductLocally = saveProductLocally;
+    window.clearLocalProducts = clearLocalProducts;
+    window.LOCAL_PRODUCTS_KEY = LOCAL_PRODUCTS_KEY;
 });
 
 // Initialize local storage if empty
 function initializeLocalStorage() {
     if (!localStorage.getItem(LOCAL_PRODUCTS_KEY)) {
         localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
+        console.log('LocalStorage initialized in DOMContentLoaded');
     }
 }
 
 // Get products from local storage
 function getLocalProducts() {
     try {
-        return JSON.parse(localStorage.getItem(LOCAL_PRODUCTS_KEY) || '[]');
+        const products = localStorage.getItem(LOCAL_PRODUCTS_KEY);
+        if (!products) {
+            console.log('No products in localStorage, returning empty array');
+            localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
+            return [];
+        }
+        return JSON.parse(products);
     } catch (e) {
+        console.error('Error parsing products from localStorage:', e);
+        localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
         return [];
     }
 }
@@ -35,14 +63,23 @@ function saveProductLocally(product) {
     const products = getLocalProducts();
     products.push(product);
     localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
+    console.log('Product saved. Total products now:', products.length);
 }
 
 // Clear local products (useful for testing)
 function clearLocalProducts() {
     localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify([]));
-    loadProducts();
+    if (typeof loadProducts !== 'undefined') {
+        loadProducts();
+    }
     alert('Local products cleared!');
 }
+
+// Make functions immediately available globally
+window.getLocalProducts = getLocalProducts;
+window.saveProductLocally = saveProductLocally;
+window.clearLocalProducts = clearLocalProducts;
+window.LOCAL_PRODUCTS_KEY = LOCAL_PRODUCTS_KEY;
 
 // Navigation
 function showSection(sectionId) {
