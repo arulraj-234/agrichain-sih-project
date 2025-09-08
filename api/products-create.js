@@ -1,3 +1,10 @@
+// Mock registered stakeholders for demo
+const registeredStakeholders = new Set([
+    'demo-farmer-1',
+    'demo-farmer-2',
+    'demo-user'
+]);
+
 export default function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -20,6 +27,10 @@ export default function handler(req, res) {
 
     // Extract product data from request body
     const { name, description, quantity, pricePerUnit, origin, isOrganic } = req.body;
+    
+    // For demo purposes, auto-register the user as a farmer
+    const userId = req.headers['x-user-id'] || 'demo-user';
+    registeredStakeholders.add(userId);
 
     // Validate required fields
     if (!name || !description || !quantity || !pricePerUnit || !origin) {
@@ -41,12 +52,18 @@ export default function handler(req, res) {
         isOrganic: !!isOrganic,
         currentState: 0,
         timestamp: Date.now(),
-        transactionHash: '0x' + Math.random().toString(36).substring(2, 15)
+        transactionHash: '0x' + Math.random().toString(36).substring(2, 15),
+        farmerId: userId,
+        farmerName: 'Demo Farmer'
     };
+
+    // Log for demo purposes
+    console.log('Product created:', newProduct);
 
     res.status(201).json({
         success: true,
-        message: 'Product created successfully',
-        data: newProduct
+        message: 'Product created successfully! (Demo Mode - Auto-registered as Farmer)',
+        data: newProduct,
+        note: 'In production, you would need to be a registered stakeholder with a blockchain wallet.'
     });
 }

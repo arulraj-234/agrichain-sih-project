@@ -171,12 +171,25 @@ async function createProduct(event) {
         const data = await response.json();
         
         if (data.success) {
-            alert('Product created successfully!');
+            // Show success message with demo note
+            const message = data.message || 'Product created successfully!';
+            const note = data.note ? '\n\nNote: ' + data.note : '';
+            alert(message + note);
+            
             toggleProductForm();
             loadProducts();
             event.target.reset();
         } else {
-            alert('Error creating product: ' + (data.message || 'Unknown error'));
+            // Handle blockchain-related errors gracefully
+            if (data.message && data.message.includes('registered stakeholder')) {
+                alert('Demo Mode: Auto-registering you as a farmer. Please try again.');
+                // Retry the request
+                setTimeout(() => {
+                    createProduct(event);
+                }, 1000);
+            } else {
+                alert('Error creating product: ' + (data.message || 'Unknown error'));
+            }
         }
     } catch (error) {
         console.error('Error creating product:', error);
