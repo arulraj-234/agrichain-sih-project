@@ -1,0 +1,34 @@
+{
+  "name": "blockchain-agricultural-supply-chain",
+  "version": "1.0.0",
+  "description": "Blockchain-based supply chain transparency system for agricultural produce",
+  "main": "index.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm start",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js",
+    "test": "npx hardhat test"
+  },
+  "keywords": [
+    "blockchain",
+    "supply-chain",
+    "agriculture",
+    "transparency",
+    "ethereum",
+    "smart-contracts"
+  ],
+  "author": "Agricultural Supply Chain Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "concurrently": "^8.2.2",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.2.2"
+  }
+}

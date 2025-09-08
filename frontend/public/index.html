@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agricultural Supply Chain Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌾 Agricultural Supply Chain Tracker</h1>
+            <p>Transparent tracking of agricultural produce from farm to consumer</p>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="showSection('products')">Products</button>
+            <button class="nav-btn" onclick="showSection('stakeholders')">Stakeholders</button>
+            <button class="nav-btn" onclick="showSection('track')">Track Product</button>
+            <button class="nav-btn" onclick="showSection('register')">Register</button>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section">
+            <h2>Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <p class="stat-number" id="totalProducts">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Stakeholders</h3>
+                    <p class="stat-number" id="totalStakeholders">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Transactions Today</h3>
+                    <p class="stat-number" id="todayTransactions">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Network Status</h3>
+                    <p class="stat-status" id="networkStatus">Checking...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="content-section" style="display: none;">
+            <h2>Products</h2>
+            <button class="btn-primary" onclick="toggleProductForm()">Add New Product</button>
+            
+            <div id="productForm" class="form-container" style="display: none;">
+                <h3>Create New Product</h3>
+                <form onsubmit="createProduct(event)">
+                    <input type="text" id="productName" placeholder="Product Name" required>
+                    <textarea id="productDescription" placeholder="Description" required></textarea>
+                    <input type="number" id="productQuantity" placeholder="Quantity (kg)" required>
+                    <input type="number" id="productPrice" placeholder="Price per Unit (₹)" required>
+                    <input type="text" id="productOrigin" placeholder="Origin Location" required>
+                    <label>
+                        <input type="checkbox" id="productOrganic">
+                        Organic Product
+                    </label>
+                    <button type="submit" class="btn-primary">Create Product</button>
+                    <button type="button" class="btn-secondary" onclick="toggleProductForm()">Cancel</button>
+                </form>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Stakeholders Section -->
+        <section id="stakeholders" class="content-section" style="display: none;">
+            <h2>Stakeholders</h2>
+            <div class="stakeholders-grid" id="stakeholdersGrid">
+                <!-- Stakeholders will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Track Product Section -->
+        <section id="track" class="content-section" style="display: none;">
+            <h2>Track Product</h2>
+            <div class="track-container">
+                <input type="text" id="trackProductId" placeholder="Enter Product ID or Scan QR Code">
+                <button class="btn-primary" onclick="trackProduct()">Track</button>
+                
+                <div id="trackingResult" class="tracking-result" style="display: none;">
+                    <!-- Tracking results will be displayed here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register" class="content-section" style="display: none;">
+            <h2>Register as Stakeholder</h2>
+            <form onsubmit="registerStakeholder(event)" class="form-container">
+                <input type="text" id="walletAddress" placeholder="Wallet Address (0x...)" required>
+                <input type="text" id="stakeholderName" placeholder="Name" required>
+                <input type="email" id="contactInfo" placeholder="Email" required>
+                <select id="stakeholderType" required>
+                    <option value="">Select Type</option>
+                    <option value="0">Farmer</option>
+                    <option value="1">Distributor</option>
+                    <option value="2">Retailer</option>
+                    <option value="3">Consumer</option>
+                </select>
+                <input type="text" id="location" placeholder="Location" required>
+                <button type="submit" class="btn-primary">Register</button>
+            </form>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2024 Agricultural Supply Chain - Government of Odisha</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
