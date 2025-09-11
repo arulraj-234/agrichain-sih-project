@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
-import { QrCode, Scan, Check, X } from 'lucide-react'
-import QRCode from 'qrcode'
+import { QrCode, Scan, Check, X, Download } from 'lucide-react'
+import { qrAPI, trackingAPI } from '../lib/api'
+import { toast } from 'react-toastify'
 
 interface QRSectionProps {
   products: Product[]
@@ -23,34 +24,25 @@ export function QRSection({ products, selectedProduct, onSelectProduct }: QRSect
     message: string
   } | null>(null)
 
-  React.useEffect(() => {
-    if (selectedProduct) {
-      const generateQR = async () => {
-        try {
-          const qrData = JSON.stringify({
-            id: selectedProduct.id,
-            name: selectedProduct.name,
-            farmerId: selectedProduct.farmerId,
-            origin: selectedProduct.origin,
-            harvestDate: selectedProduct.harvestDate,
-            isOrganic: selectedProduct.isOrganic
-          })
-          const dataUrl = await QRCode.toDataURL(qrData, {
-            width: 300,
-            margin: 2,
-            color: {
-              dark: '#10B981',
-              light: '#FFFFFF'
-            }
-          })
-          setQrDataUrl(dataUrl)
-        } catch (error) {
-          console.error('Error generating QR code:', error)
-        }
+  const [loadingQR, setLoadingQR] = React.useState(false)
+
+  const generateQRFromAPI = async (productId: string) => {
+    setLoadingQR(true)
+    try {
+      const response = await qrAPI.generateQR(productId)
+      if (response.success && response.data) {
+        setQrDataUrl(response.data.qrCode)
+        toast.success('QR code generated successfully!')
+      } else {
+        toast.error('Failed to generate QR code')
       }
-      generateQR()
+    } catch (error: any) {
+      console.error('QR generation error:', error)
+      toast.error('Failed to generate QR code')
+    } finally {
+      setLoadingQR(false)
     }
-  }, [selectedProduct])
+  }
 
   const handleScan = () => {
     if (!scanInput.trim()) {
@@ -142,6 +134,19 @@ export function QRSection({ products, selectedProduct, onSelectProduct }: QRSect
                   ))}
                 </div>
               </div>
+
+              {selectedProduct && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => generateQRFromAPI(selectedProduct.id)}
+                    disabled={loadingQR}
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+                  >
+                    <QrCode className="h-4 w-4 mr-2" />
+                    {loadingQR ? 'Generating...' : 'Generate QR Code'}
+                  </Button>
+                </div>
+              )}
 
               {selectedProduct && qrDataUrl && (
                 <div className="text-center space-y-4 p-6 bg-muted/30 rounded-lg">

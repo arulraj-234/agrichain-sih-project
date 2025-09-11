@@ -17,13 +17,14 @@ interface SidebarProps {
   onSectionChange: (section: string) => void
   isOpen: boolean
   onToggle: () => void
+  logOut: any
 }
 
-export function Sidebar({ activeSection, onSectionChange, isOpen, onToggle }: SidebarProps) {
+export function Sidebar({ activeSection, onSectionChange, isOpen, onToggle,logOut }: SidebarProps) {
   const menuItems = [
-    { id: 'products', label: 'Add Product', icon: Plus },
-    { id: 'farmer', label: 'Register Farmer', icon: UserPlus },
-    { id: 'middleman', label: 'Register Middleman', icon: UserPlus },
+    { id: 'Dashboard', label: 'Dashboard', icon: Plus },
+    // { id: 'farmer', label: 'Register Farmer', icon: UserPlus },
+    // { id: 'middleman', label: 'Register Middleman', icon: UserPlus },
     { id: 'transactions', label: 'Transactions', icon: ArrowRightLeft },
     // { id: 'qr', label: 'QR Showcase', icon: QrCode },
   ]
@@ -89,6 +90,11 @@ export function Sidebar({ activeSection, onSectionChange, isOpen, onToggle }: Si
           </nav>
 
           {/* Footer */}
+          <div className="mt-auto pt-4 ">
+            <div className="flex items-center justify-between">
+              <Button className='hover:bg-red-500 hover:text-white font-bold' onClick={logOut}>Log-Out</Button>
+            </div>
+          </div>
           <div className="mt-auto pt-4 border-t border-border">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Theme</span>

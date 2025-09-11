@@ -1,104 +1,98 @@
 const hre = require("hardhat");
-const fs = require("fs");
-const path = require("path");
 
 async function main() {
-    console.log("🚀 Starting deployment of Agricultural Supply Chain Smart Contract...");
+  const { ethers } = hre;
+  console.log("🚀 Starting deployment of ProductManagement contract...");
 
-    // Get the contract factory
-    const SupplyChain = await hre.ethers.getContractFactory("SupplyChain");
-    
-    // Deploy the contract
-    console.log("📝 Deploying SupplyChain contract...");
-    const supplyChain = await SupplyChain.deploy();
-    
-    // Wait for deployment
-    await supplyChain.waitForDeployment();
-    
-    const contractAddress = await supplyChain.getAddress();
-    console.log("✅ SupplyChain contract deployed to:", contractAddress);
-    
-    // Save the contract address to a file
-    const deploymentInfo = {
-        contractAddress: contractAddress,
-        network: hre.network.name,
-        deployedAt: new Date().toISOString(),
-        deployer: (await hre.ethers.getSigners())[0].address
-    };
-    
-    const deploymentPath = path.join(__dirname, "../deployment.json");
-    fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
-    console.log("📄 Deployment info saved to deployment.json");
-    
-    // Create .env file for backend
-    const envContent = `
-# Blockchain Configuration
-CONTRACT_ADDRESS=${contractAddress}
-BLOCKCHAIN_URL=http://127.0.0.1:8545
-NETWORK=${hre.network.name}
+  // Get contract factory
+  const ProductManagement = await ethers.getContractFactory(
+    "ProductManagement"
+  );
 
-# API Configuration
-PORT=3001
-FRONTEND_URL=http://localhost:3000
-`;
-    
-    const envPath = path.join(__dirname, "../backend/.env");
-    fs.writeFileSync(envPath, envContent.trim());
-    console.log("📄 Environment configuration saved to backend/.env");
-    
-    // Sample data setup (optional)
-    console.log("\n🌱 Setting up sample data...");
-    
-    try {
-        // Register sample stakeholders
-        const [owner, addr1, addr2, addr3] = await hre.ethers.getSigners();
-        
-        // Register a farmer
-        await supplyChain.registerStakeholder(
-            addr1.address,
-            "Green Valley Farm",
-            "farm@greenvalley.com",
-            0, // Farmer
-            "Cuttack, Odisha"
-        );
-        console.log("✅ Registered farmer");
-        
-        // Register a distributor
-        await supplyChain.registerStakeholder(
-            addr2.address,
-            "Fresh Logistics",
-            "info@freshlogistics.com",
-            1, // Distributor
-            "Bhubaneswar, Odisha"
-        );
-        console.log("✅ Registered distributor");
-        
-        // Register a retailer
-        await supplyChain.registerStakeholder(
-            addr3.address,
-            "City Mart",
-            "contact@citymart.com",
-            2, // Retailer
-            "Puri, Odisha"
-        );
-        console.log("✅ Registered retailer");
-        
-        console.log("\n🎉 Deployment and setup completed successfully!");
-        console.log("\n📋 Next steps:");
-        console.log("1. Keep this terminal running (Hardhat node)");
-        console.log("2. In a new terminal, navigate to the backend folder and run: npm install && npm start");
-        console.log("3. In another terminal, navigate to the frontend folder and run: npm install && npm start");
-        console.log("4. Open http://localhost:3000 in your browser");
-        
-    } catch (error) {
-        console.error("⚠️ Error setting up sample data:", error);
-        console.log("Contract deployed successfully, but sample data setup failed.");
-    }
+  // Deploy contract
+  console.log("⏳ Deploying ProductManagement contract...");
+  const productManagement = await ProductManagement.deploy();
+
+  // Wait until deployment is mined
+  await productManagement.waitForDeployment();
+
+  console.log("✅ Contract deployed successfully!");
+  console.log("📍 Contract address:", productManagement.target);
+
+  // Deployment transaction info
+  const deploymentTx = productManagement.deploymentTransaction();
+  console.log("🔗 Transaction hash:", deploymentTx.hash);
+  console.log("⛽ Gas limit:", deploymentTx.gasLimit.toString());
+
+  // Network info
+  const network = await ethers.provider.getNetwork();
+  console.log("🌐 Network:", network.name);
+  console.log("🆔 Chain ID:", network.chainId);
+
+  // Deployer info
+  const [deployer] = await ethers.getSigners();
+  console.log("👤 Deployed by:", deployer.address);
+  const balance = await ethers.provider.getBalance(deployer.address);
+  console.log("💰 Deployer balance:", ethers.formatEther(balance), "ETH");
+
+  // Save deployment info
+ const deploymentInfo = {
+  contractName: "ProductManagement",
+  contractAddress: productManagement.target,
+  transactionHash: deploymentTx.hash,
+  gasUsed: deploymentTx.gasLimit.toString(),   // BigInt → string
+  network: network.name,
+  chainId: network.chainId.toString(),        // BigInt → string
+  deployer: deployer.address,
+  deploymentTime: new Date().toISOString(),
+  blockNumber: deploymentTx.blockNumber?.toString() // BigInt → string (optional, may be undefined until mined)
+};
+
+
+  console.log("\n📋 Deployment Information (JSON):");
+  console.log(JSON.stringify(deploymentInfo, null, 2));
+
+  // 🔹 Basic functionality test
+  console.log("\n🧪 Running basic functionality test...");
+  try {
+    const testTx = await productManagement.createProduct(
+      "TEST001",
+      "Test Product",
+      "A test product for deployment verification",
+      "FARMER001",
+      100,
+      ethers.parseEther("0.01"), // ✅ v6 uses ethers.parseEther
+      0, // ProductState.Produced
+      "2024-01-01",
+      "Test Farm, India",
+      true,
+      deployer.address,
+      deployer.address
+    );
+
+    await testTx.wait();
+    console.log("✅ Test product created successfully");
+
+    const totalProducts = await productManagement.getTotalProducts();
+    console.log("📊 Total products in contract:", totalProducts.toString());
+
+    const productDetails = await productManagement.getProduct("TEST001");
+    console.log("🏷️  Test product name:", productDetails.name);
+
+    console.log("✅ Basic functionality test passed!");
+  } catch (error) {
+    console.log("❌ Basic functionality test failed:", error.message);
+  }
+
+  console.log("\n🎉 Deployment completed successfully!");
+  console.log("📚 Interact with the contract at:", productManagement.target);
 }
 
+// Execute deployment
 main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error("❌ Deployment failed:", error);
-        process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("❌ Deployment failed:");
+    console.error(error);
+    process.exit(1);
+  });

@@ -11,11 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-// import { toast } from '@/hooks/use-toast'
 import type { Product } from "@/types";
 import { Plus, Sparkles } from "lucide-react";
-import { ToastProvider, useToast } from "@/hooks/useToast";
-import { useCreateProduct } from "@/hooks/useProducts";
+import { useToast } from "@/hooks/useToast";
 
 interface AddProductFormProps {
   onAddProduct: (
@@ -243,7 +241,6 @@ export function AddProductForm({ onAddProduct }: AddProductFormProps) {
           </form>
         </CardContent>
       </Card>
-      <ToastProvider />
     </div>
   );
 }

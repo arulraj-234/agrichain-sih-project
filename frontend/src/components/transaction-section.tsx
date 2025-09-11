@@ -6,66 +6,66 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import type { Transaction, Product } from '@/types'
-import { ArrowRightLeft, Clock, DollarSign, User, FileText, Plus } from 'lucide-react'
-import { ToastProvider, useToast } from '@/hooks/useToast'
-// import { toast } from '@/hooks/use-toast'
+import type { Product } from '@/types'
+import type { Transaction } from '@/lib/api'
+import { ArrowRightLeft, Clock, DollarSign, User, FileText, Plus, AlertCircle } from 'lucide-react'
+import { useProducts, useTransferProduct, useProductTransactions } from '@/hooks/useProducts'
+import { useAuth } from '@/hooks/useAuth'
+import { toast } from 'react-toastify'
 
 interface TransactionsSectionProps {
-  transactions: Transaction[]
-  products: Product[]
-  onAddTransaction: (transaction: Omit<Transaction, 'id' | 'timestamp'>) => void
+  // Remove props since we'll fetch data via API
 }
 
-export function TransactionsSection({ transactions, products, onAddTransaction }: TransactionsSectionProps) {
+export function TransactionsSection({ }: TransactionsSectionProps) {
   const [showForm, setShowForm] = React.useState(false)
   const [formData, setFormData] = React.useState({
     productId: '',
-    fromStakeholder: '',
-    toStakeholder: '',
-    price: '',
-    notes: ''
+    fromUserId: '',
+    toUserId: '',
   })
-  const [isLoading, setIsLoading] = React.useState(false)
-    const {toast} = useToast()
+  const [selectedProduct, setSelectedProduct] = React.useState('')
+  
+  // Use real API hooks
+  const { user } = useAuth()
+  const { data: productsData, isLoading: productsLoading } = useProducts(0, 50)
+  const { mutate: transferProduct, isPending: isTransferring } = useTransferProduct()
+  const { data: transactionsData, isLoading: transactionsLoading } = useProductTransactions(selectedProduct)
+  
+  // Extract data from API responses
+  const products = productsData?.products || []
+  const transactions = transactionsData || []
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
 
     try {
-      if (!formData.productId || !formData.fromStakeholder || !formData.toStakeholder || !formData.price) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields.",
-          type: "warning",
-        })
+      if (!formData.productId || !formData.fromUserId || !formData.toUserId) {
+        toast.error('Please fill in all required fields.')
         return
       }
 
-      onAddTransaction(formData)
-      
-      setFormData({
-        productId: '',
-        fromStakeholder: '',
-        toStakeholder: '',
-        price: '',
-        notes: ''
-      })
+      if (!user?.id) {
+        toast.error('User not authenticated.')
+        return
+      }
 
-      setShowForm(false)
-
-      toast({
-        title: "Transaction Added Successfully! 🎉",
-        description: "The transaction has been recorded on the blockchain.",
+      transferProduct({
+        productId: formData.productId,
+        fromUserId: formData.fromUserId,
+        toUserId: formData.toUserId,
+      }, {
+        onSuccess: () => {
+          setFormData({
+            productId: '',
+            fromUserId: '',
+            toUserId: '',
+          })
+          setShowForm(false)
+        },
       })
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add transaction. Please try again.",
-        type: "error",
-      })
-    } finally {
-      setIsLoading(false)
+      console.error('Transaction error:', error)
+      toast.error('Failed to create transaction. Please try again.')
     }
   }
 
@@ -97,148 +97,186 @@ export function TransactionsSection({ transactions, products, onAddTransaction }
         </Button>
       </div>
 
-      {/* Add Transaction Form */}
-      {showForm && (
-        <Card className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-xl">
+      {/* Product Selection for Transaction History */}
+      {!showForm && (
+        <Card className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg mb-6">
           <CardHeader>
-            <CardTitle className="text-xl font-bold">Record New Transaction</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5 text-purple-500" />
+              View Transaction History
+            </CardTitle>
             <CardDescription>
-              Add a new transaction to track product movement in the supply chain
+              Select a product to view its transaction history
             </CardDescription>
           </CardHeader>
           
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="productSelect" className="text-sm font-medium">
+                  Select Product
+                </Label>
+                <Select value={selectedProduct} onValueChange={setSelectedProduct}>
+                  <SelectTrigger className="h-11 bg-background/50 border-border/50">
+                    <SelectValue placeholder="Choose a product to view its transactions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((product: Product) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.name} - {product.origin}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Add Transaction Form */}
+      {showForm && (
+        <Card className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-xl mb-6">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">Transfer Product Ownership</CardTitle>
+            <CardDescription>
+              Transfer a product from one stakeholder to another on the blockchain
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            {productsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center space-x-2">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+                  <span>Loading products...</span>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="productId" className="text-sm font-medium">
                     Product *
                   </Label>
                   <Select value={formData.productId} onValueChange={(value) => setFormData({ ...formData, productId: value })}>
                     <SelectTrigger className="h-11 bg-background/50 border-border/50">
-                      <SelectValue placeholder="Select a product" />
+                      <SelectValue placeholder="Select a product to transfer" />
                     </SelectTrigger>
                     <SelectContent>
-                      {products.map((product) => (
+                      {products.map((product: Product) => (
                         <SelectItem key={product.id} value={product.id}>
-                          {product.name} (ID: {product.id})
+                          {product.name} - {product.origin} (Current: {product.currentHolderId})
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="price" className="text-sm font-medium">
-                    Transaction Price (₹) *
-                  </Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    placeholder="5000"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    className="h-11 bg-background/50 border-border/50 focus:border-purple-500/50 focus:ring-purple-500/20"
-                    required
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="fromUserId" className="text-sm font-medium">
+                      From User ID *
+                    </Label>
+                    <Input
+                      id="fromUserId"
+                      type="text"
+                      placeholder="Current owner's user ID"
+                      value={formData.fromUserId}
+                      onChange={(e) => setFormData({ ...formData, fromUserId: e.target.value })}
+                      className="h-11 bg-background/50 border-border/50 focus:border-purple-500/50 focus:ring-purple-500/20"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="toUserId" className="text-sm font-medium">
+                      To User ID *
+                    </Label>
+                    <Input
+                      id="toUserId"
+                      type="text"
+                      placeholder="New owner's user ID"
+                      value={formData.toUserId}
+                      onChange={(e) => setFormData({ ...formData, toUserId: e.target.value })}
+                      className="h-11 bg-background/50 border-border/50 focus:border-purple-500/50 focus:ring-purple-500/20"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="fromStakeholder" className="text-sm font-medium">
-                    From Stakeholder *
-                  </Label>
-                  <Input
-                    id="fromStakeholder"
-                    type="text"
-                    placeholder="Stakeholder ID"
-                    value={formData.fromStakeholder}
-                    onChange={(e) => setFormData({ ...formData, fromStakeholder: e.target.value })}
-                    className="h-11 bg-background/50 border-border/50 focus:border-purple-500/50 focus:ring-purple-500/20"
-                    required
-                  />
+                <div className="flex space-x-4">
+                  <Button 
+                    type="submit" 
+                    className="flex-1 h-11 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium transition-all duration-200"
+                    disabled={isTransferring}
+                  >
+                    {isTransferring ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span>Transferring...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <ArrowRightLeft className="h-4 w-4" />
+                        <span>Transfer Ownership</span>
+                      </div>
+                    )}
+                  </Button>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={() => setShowForm(false)}
+                    className="px-6"
+                  >
+                    Cancel
+                  </Button>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="toStakeholder" className="text-sm font-medium">
-                    To Stakeholder *
-                  </Label>
-                  <Input
-                    id="toStakeholder"
-                    type="text"
-                    placeholder="Stakeholder ID"
-                    value={formData.toStakeholder}
-                    onChange={(e) => setFormData({ ...formData, toStakeholder: e.target.value })}
-                    className="h-11 bg-background/50 border-border/50 focus:border-purple-500/50 focus:ring-purple-500/20"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notes" className="text-sm font-medium">
-                  Transaction Notes
-                </Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Add any additional notes about this transaction..."
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="bg-background/50 border-border/50 focus:border-purple-500/50 focus:ring-purple-500/20"
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex space-x-4">
-                <Button 
-                  type="submit" 
-                  className="flex-1 h-11 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium transition-all duration-200"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      <span>Recording...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <ArrowRightLeft className="h-4 w-4" />
-                      <span>Record Transaction</span>
-                    </div>
-                  )}
-                </Button>
-                
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => setShowForm(false)}
-                  className="px-6"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
+              </form>
+            )}
           </CardContent>
         </Card>
       )}
 
       {/* Transactions List */}
       <div className="space-y-6">
-        {transactions.length === 0 ? (
+        {transactionsLoading && selectedProduct && (
+          <div className="flex items-center justify-center py-12">
+            <div className="flex items-center space-x-2">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+              <span className="text-lg">Loading transactions...</span>
+            </div>
+          </div>
+        )}
+
+        {!selectedProduct && !showForm && (
           <Card className="border-border/50 bg-gradient-to-br from-card to-card/80">
             <CardContent className="text-center py-12">
-              <ArrowRightLeft className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Transactions Yet</h3>
+              <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Product Selected</h3>
               <p className="text-muted-foreground">
-                Start by adding your first transaction to track product movement.
+                Please select a product above to view its transaction history.
               </p>
             </CardContent>
           </Card>
-        ) : (
+        )}
+
+        {selectedProduct && !transactionsLoading && transactions.length === 0 && (
+          <Card className="border-border/50 bg-gradient-to-br from-card to-card/80">
+            <CardContent className="text-center py-12">
+              <ArrowRightLeft className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Transactions Found</h3>
+              <p className="text-muted-foreground">
+                This product doesn't have any transactions yet. Transfer ownership to create the first transaction.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedProduct && !transactionsLoading && transactions.length > 0 && (
           <div className="grid gap-6">
-            {transactions.map((transaction) => (
-              <Card key={transaction.id} className="border-border/50 bg-gradient-to-br from-card to-card/80 hover:shadow-lg transition-all duration-300">
+            {transactions.map((transaction: Transaction) => (
+              <Card key={transaction.transactionId} className="border-border/50 bg-gradient-to-br from-card to-card/80 hover:shadow-lg transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -247,65 +285,72 @@ export function TransactionsSection({ transactions, products, onAddTransaction }
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">{getProductName(transaction.productId)}</h3>
-                        <p className="text-sm text-muted-foreground">Transaction ID: {transaction.id}</p>
+                        <p className="text-sm text-muted-foreground">Transaction ID: {transaction.transactionId}</p>
                       </div>
                     </div>
                     <Badge variant="secondary" className="bg-purple-500/10 text-purple-600 border-purple-500/20">
                       <Clock className="h-3 w-3 mr-1" />
-                      {new Date(parseInt(transaction.timestamp)).toLocaleDateString()}
+                      {new Date(transaction.timestamp).toLocaleDateString()}
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                         <User className="h-4 w-4" />
-                        <span>From:</span>
+                        <span>From User:</span>
                       </div>
                       <p className="font-mono text-sm bg-muted px-2 py-1 rounded">
-                        {transaction.fromStakeholder}
+                        {transaction.fromUserId}
                       </p>
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                         <User className="h-4 w-4" />
-                        <span>To:</span>
+                        <span>To User:</span>
                       </div>
                       <p className="font-mono text-sm bg-muted px-2 py-1 rounded">
-                        {transaction.toStakeholder}
-                      </p>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <DollarSign className="h-4 w-4" />
-                        <span>Price:</span>
-                      </div>
-                      <p className="font-semibold text-lg text-emerald-600">
-                        ₹{parseInt(transaction.price).toLocaleString()}
+                        {transaction.toUserId}
                       </p>
                     </div>
                   </div>
 
-                  {transaction.notes && (
-                    <div className="space-y-2">
+                  {/* Blockchain Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="space-y-1">
                       <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <FileText className="h-4 w-4" />
-                        <span>Notes:</span>
+                        <span>Transaction Hash:</span>
                       </div>
-                      <p className="text-sm bg-muted/50 p-3 rounded-lg">
-                        {transaction.notes}
+                      <p className="font-mono text-xs bg-muted px-2 py-1 rounded break-all">
+                        {transaction.transactionHash}
                       </p>
                     </div>
-                  )}
+
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <span>Block Number:</span>
+                      </div>
+                      <p className="font-semibold text-sm text-blue-600">
+                        #{transaction.blockNumber}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <span>Gas Used:</span>
+                      </div>
+                      <p className="font-semibold text-sm text-orange-600">
+                        {transaction.gasUsed}
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
       </div>
-        <ToastProvider />
     </div>
   )
 }
