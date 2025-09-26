@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Product } from '@/types'
 import type { Transaction } from '@/lib/api'
 import { ArrowRightLeft, Clock, DollarSign, User, FileText, Plus, AlertCircle } from 'lucide-react'
-import { useProducts, useTransferProduct, useProductTransactions } from '@/hooks/useProducts'
+import { useProducts, useTransferProduct, useProductTransactions, useMyProducts } from '@/hooks/useProducts'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'react-toastify'
 
@@ -28,7 +28,7 @@ export function TransactionsSection({ }: TransactionsSectionProps) {
   
   // Use real API hooks
   const { user } = useAuth()
-  const { data: productsData, isLoading: productsLoading } = useProducts(0, 50)
+  const { data: productsData, isLoading: productsLoading } = useMyProducts(0, 50)
   const { mutate: transferProduct, isPending: isTransferring } = useTransferProduct()
   const { data: transactionsData, isLoading: transactionsLoading } = useProductTransactions(selectedProduct)
   

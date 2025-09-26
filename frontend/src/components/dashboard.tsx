@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AddProductForm } from "@/components/add-product-form";
-import { useProducts, useCreateProduct } from "@/hooks/useProducts";
+import { useMyProducts, useCreateProduct } from "@/hooks/useProducts";
 import {
   Plus,
   Search,
@@ -41,19 +41,22 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
   const [qrModalProduct, setQrModalProduct] = React.useState<Product | null>(null);
   const [qrModalDataUrl, setQrModalDataUrl] = React.useState<string>("");
 
-  // Use the real API hooks
-  const { data: productsData, isLoading, error } = useProducts(0, 50); // Get first 50 products
+  // Use the real API hooks - fetch user's own products only
+  const { data: productsData, isLoading, error } = useMyProducts(0, 50); // Get user's first 50 products
   const { mutate: createProduct, isPending: isCreating } = useCreateProduct();
 
   // Extract products from API response
   const products = productsData?.products || [];
 
+  console.log("User's Products:", products);
   const filteredProducts = products.filter(
     (product: Product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.farmerId.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  
 
   const totalProducts = products.length;
   const organicProducts = products.filter((p: Product) => p.isOrganic).length;
@@ -116,7 +119,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-chart-2 to-chart-2 bg-clip-text text-transparent mb-2">
-              Supply Chain Dashboard
+              My Products Dashboard
             </h1>
             <p className="text-gray-600 text-lg">
               Track and manage your agricultural products on the blockchain
@@ -263,6 +266,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
         {!isLoading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map((product: Product) => (
+              
               <Card
                 key={product.id}
                 className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
@@ -271,7 +275,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg font-semibold text-foreground mb-1">
-                        {product.name}
+                        {product.name}{product.currentHolderId === user.id ? "" : <span className="bg-red-500/60 border-2 border-red-300 rounded-3xl text-white text-xs px-2 py-1 ml-2"> (SOLD)</span>}
                       </CardTitle>
                       <div className="flex items-center gap-2 mb-2">
                         {product.isOrganic && (
@@ -316,7 +320,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400" />
                       <span className="text-foreground">
-                        {new Date(product.harvestDate).toLocaleDateString()}
+                        {new Date(product.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                   </div>

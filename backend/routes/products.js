@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { blockchainService } = require('../services/blockchain');
+const { protect, optionalProtect } = require('../middleware/auth');
 
 // Middleware for validation
 const validateProductData = (req, res, next) => {
@@ -94,6 +95,65 @@ router.post('/', validateProductData, async (req, res) => {
 });
 
 /**
+ * @route GET /api/products/my
+ * @desc Get current user's products with pagination
+ * @access Private
+ */
+router.get('/my', protect, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const userId = req.user._id.toString();
+    
+    // Validate pagination parameters
+    if (page < 0 || limit < 1 || limit > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid pagination parameters. Page must be >= 0, limit must be 1-100'
+      });
+    }
+    
+    console.log(`📋 Fetching products for user ${userId} - Page: ${page}, Limit: ${limit}`);
+    
+    // Get all products and filter by user
+    const allProductsResult = await blockchainService.getAllProducts(0, 1000); // Get larger batch
+    const userProducts = allProductsResult.products.filter(product => 
+      product.createdBy === userId || product.farmerId === userId || product.currentHolderId === userId
+    );
+    
+    // Apply pagination to filtered results
+    const startIndex = page * limit;
+    const endIndex = startIndex + limit;
+    const paginatedProducts = userProducts.slice(startIndex, endIndex);
+    
+    const pagination = {
+      page,
+      limit,
+      total: userProducts.length,
+      totalPages: Math.ceil(userProducts.length / limit),
+      hasNext: endIndex < userProducts.length,
+      hasPrev: page > 0
+    };
+    
+    res.json({
+      success: true,
+      data: {
+        products: paginatedProducts,
+        pagination
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching user products:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user products',
+      error: error.message
+    });
+  }
+});
+
+/**
  * @route GET /api/products/:productId
  * @desc Get product details by ID
  * @access Public
@@ -129,12 +189,13 @@ router.get('/:productId', validateProductId, async (req, res) => {
   }
 });
 
+
 /**
  * @route GET /api/products
- * @desc Get all products with pagination
+ * @desc Get all products with pagination (public view)
  * @access Public
  */
-router.get('/', async (req, res) => {
+router.get('/', optionalProtect, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 0;
     const limit = parseInt(req.query.limit) || 10;
@@ -147,7 +208,12 @@ router.get('/', async (req, res) => {
       });
     }
     
-    console.log(`📋 Fetching products - Page: ${page}, Limit: ${limit}`);
+    // If user is authenticated and requests their products, redirect to /my endpoint
+    if (req.user && req.query.userOnly === 'true') {
+      return res.redirect(`/api/products/my?page=${page}&limit=${limit}`);
+    }
+    
+    console.log(`📋 Fetching all products - Page: ${page}, Limit: ${limit}`);
     
     const result = await blockchainService.getAllProducts(page, limit);
     

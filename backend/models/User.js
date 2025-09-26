@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['farmer', 'distributor', 'retailer', 'consumer', 'admin'],
+    enum: ['farmer', 'distributor', 'retailer', 'trader', 'consumer', 'admin', 'processor', 'supplier'],
     default: 'farmer'
   },
   walletAddress: {

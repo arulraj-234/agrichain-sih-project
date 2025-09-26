@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -31,6 +31,7 @@ import {
   Store,
 } from "lucide-react";
 import { ToastProvider, useToast } from "@/hooks/useToast";
+import LandingPage from "./LandingPage";
 
 interface LoginRegisterFormProps {
   onLogin: (email: string, password: string) => Promise<void>;
@@ -44,6 +45,7 @@ export function RegistrationForm({
   const [mode, setMode] = React.useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [Landing, setLanding] = useState(true)
   const { toast } = useToast();
 
   // Login form data
@@ -193,6 +195,9 @@ export function RegistrationForm({
     mode === "register" ? registerData.role : "farmer"
   );
 
+   if(Landing){
+    return <LandingPage setLanding={setLanding}/>
+   }
   return (
  <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4 sm:p-6 lg:p-8">
   <div className="w-full max-w-md sm:max-w-lg lg:max-w-2xl">

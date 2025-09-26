@@ -7,29 +7,8 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { QrCode, Package, Clock, User, MapPin, Leaf } from 'lucide-react';
 import { toast } from 'react-toastify';
-
-interface ProductTrackingData {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    farmerId: string;
-    quantity: string;
-    pricePerUnit: string;
-    currentState: number;
-    harvestDate: string;
-    origin: string;
-    isOrganic: boolean;
-    currentHolderId: string;
-    createdBy: string;
-    createdAt: string;
-  };
-  transactions: any[];
-  ownershipChain: any[];
-  totalTransactions: number;
-  currentOwner: string;
-  trackingUrl: string;
-}
+import type { ProductTrackingData, PRODUCT_STATES } from '../types';
+import { formatNumber, formatCurrency, formatDate, getErrorMessage } from '../utils';
 
 const QRScanner: React.FC = () => {
   const [productId, setProductId] = useState('');
@@ -59,8 +38,7 @@ const QRScanner: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Tracking error:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to track product';
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error) || 'Failed to track product');
       setTrackingData(null);
     } finally {
       setLoading(false);
@@ -84,19 +62,8 @@ const QRScanner: React.FC = () => {
       }
     } catch (error: any) {
       console.error('QR generation error:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to generate QR code';
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error));
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   return (
@@ -197,11 +164,11 @@ const QRScanner: React.FC = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Quantity</label>
-                  <p>{trackingData.product.quantity} units</p>
+                  <p>{formatNumber(trackingData.product.quantity)} units</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Price per Unit</label>
-                  <p>₹{trackingData.product.pricePerUnit}</p>
+                  <p>{formatCurrency(trackingData.product.pricePerUnit)}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Organic</label>

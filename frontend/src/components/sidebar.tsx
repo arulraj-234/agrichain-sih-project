@@ -52,7 +52,7 @@ export function Sidebar({ activeSection, onSectionChange, isOpen, onToggle,logOu
                 <Sprout className="h-5 w-5 text-white" />
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 bg-clip-text text-transparent">
-                FarmTrace
+                Agri<span className='text-chart-4/90'>CHAIN </span>
               </span>
             </div>
             <Button

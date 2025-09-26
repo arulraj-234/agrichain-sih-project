@@ -19,6 +19,22 @@ export const useProducts = (page = 0, limit = 10) => {
   });
 };
 
+// Get current user's products with pagination
+export const useMyProducts = (page = 0, limit = 10) => {
+  return useQuery({
+    queryKey: ['my-products', page, limit],
+    queryFn: async () => {
+      const response = await productsAPI.getMyProducts(page, limit);
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch user products');
+      }
+      return response.data;
+    },
+    staleTime: 30000, // 30 seconds
+    retry: 3,
+  });
+};
+
 // Get single product
 export const useProduct = (productId: string) => {
   return useQuery({
@@ -61,6 +77,7 @@ export const useCreateProduct = () => {
     onSuccess: (data) => {
       // Invalidate products queries to refresh the list
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['my-products'] });
       toast.success(`Product created successfully! Transaction: ${data?.transactionHash}`);
     },
     onError: (error: any) => {

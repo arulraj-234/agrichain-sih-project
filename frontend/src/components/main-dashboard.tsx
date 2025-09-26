@@ -333,12 +333,13 @@ function MainDashboard() {
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         logOut={logout}
-      />
+        />
 
       <main className="lg:ml-64 min-h-screen">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="flex items-center justify-between px-6 py-4">
+        <span>Hello, <span className="font-bold text-chart-2 text-2xl ">{user?.role||user?.id}!</span> You are logged in. </span>
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -359,7 +360,7 @@ function MainDashboard() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* <div className="flex items-center space-x-4">
               <div className="hidden sm:flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <Package className="h-4 w-4 text-muted-foreground" />
@@ -374,7 +375,8 @@ function MainDashboard() {
                   </span>
                 </div>
               </div>
-            </div>
+            </div> */}
+            Your user id: {user?.id}
           </div>
         </header>
 

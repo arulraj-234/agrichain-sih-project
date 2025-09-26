@@ -1,4 +1,19 @@
 import axios from 'axios';
+// Import types from centralized types file
+import type {
+  Product,
+  User,
+  Transaction,
+  UserRole,
+  ProductState,
+  CreateProductData,
+  ProductCreateResponse,
+  QRGenerateResponse,
+  ProductTrackingData,
+  PaginationMeta,
+  ApiResponse,
+  LoginResponse
+} from '../types';
 
 const API_BASE_URL = 'http://192.168.43.160:3001/api';
 
@@ -39,59 +54,21 @@ api.interceptors.response.use(
   }
 );
 
-// API types
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-export interface LoginResponse {
-  success: boolean;
-  message: string;
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-    walletAddress?: string;
-    profile: any;
-    verified: boolean;
-    isActive: boolean;
-    createdAt: string;
-    lastLogin?: string;
-  };
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  farmerId: string;
-  quantity: string;
-  pricePerUnit: string;
-  currentState: number;
-  harvestDate: string;
-  origin: string;
-  isOrganic: boolean;
-  currentHolderId: string;
-  createdBy?: string;
-  createdAt?: string;
-}
-
-export interface Transaction {
-  id?: string;
-  transactionId: string;
-  productId: string;
-  fromUserId: string;
-  toUserId: string;
-  timestamp: string;
-  transactionHash: string;
-  blockNumber: number;
-  gasUsed: string;
-}
+// Re-export commonly used types for convenience
+export type { 
+  Product, 
+  User, 
+  Transaction, 
+  UserRole, 
+  ProductState, 
+  ApiResponse, 
+  LoginResponse,
+  CreateProductData,
+  ProductCreateResponse,
+  QRGenerateResponse,
+  ProductTrackingData,
+  PaginationMeta
+} from '../types';
 
 // Auth API calls
 export const authAPI = {
@@ -145,6 +122,22 @@ export const productsAPI = {
     };
   }>> => {
     const response = await api.get<ApiResponse<any>>(`/products?page=${page}&limit=${limit}`);
+    return response.data;
+  },
+
+  // Get user's own products
+  getMyProducts: async (page = 0, limit = 10): Promise<ApiResponse<{
+    products: Product[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  }>> => {
+    const response = await api.get<ApiResponse<any>>(`/products/my?page=${page}&limit=${limit}`);
     return response.data;
   },
 
