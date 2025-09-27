@@ -15,8 +15,9 @@ import type {
   LoginResponse
 } from '../types';
 
-const API_BASE_URL = 'http://192.168.43.160:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
+console.log('API Base URL:', API_BASE_URL);
 // Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
