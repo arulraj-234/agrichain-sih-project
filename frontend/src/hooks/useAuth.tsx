@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       // Clear local storage and state regardless of API call success
       localStorage.removeItem('token');
-      localStorage.removeUser('user');
+      localStorage.removeItem('user');
       setUser(null);
       toast.success('Logged out successfully');
     }
