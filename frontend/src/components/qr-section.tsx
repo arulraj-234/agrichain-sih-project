@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import type { Product } from '@/types'
-import { QrCode, Scan, Check, X, Download } from 'lucide-react'
-import { qrAPI, trackingAPI } from '../lib/api'
+import { QrCode, Scan, Check, X } from 'lucide-react'
+import { qrAPI } from '../lib/api'
 import { toast } from 'react-toastify'
 
 interface QRSectionProps {
@@ -252,7 +252,7 @@ export function QRSection({ products, selectedProduct, onSelectProduct }: QRSect
                           </div>
                           <div>
                             <span className="text-muted-foreground">Harvest:</span>
-                            <span className="ml-2">{new Date(parseInt(scanResult.product.harvestDate)).toLocaleDateString()}</span>
+                            <span className="ml-2">{new Date(parseInt(scanResult.product.harvestDate as any)).toLocaleDateString()}</span>
                           </div>
                         </div>
                       </div>

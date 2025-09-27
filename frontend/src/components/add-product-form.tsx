@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import type { Product } from "@/types";
 import { Plus, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
+// import { number } from "framer-motion";
 
 interface AddProductFormProps {
   onAddProduct: (
@@ -29,8 +30,8 @@ export function AddProductForm({ onAddProduct }: AddProductFormProps) {
     name: "",
     description: "",
     farmerId: "",
-    quantity: "",
-    pricePerUnit: "",
+    quantity: 0,
+    pricePerUnit: 0,
     origin: "",
     isOrganic: false,
   });
@@ -64,8 +65,8 @@ export function AddProductForm({ onAddProduct }: AddProductFormProps) {
         name: "",
         description: "",
         farmerId: "",
-        quantity: "",
-        pricePerUnit: "",
+        quantity: 0,
+        pricePerUnit: 0,
         origin: "",
         isOrganic: false,
       });
@@ -166,7 +167,7 @@ export function AddProductForm({ onAddProduct }: AddProductFormProps) {
                   placeholder="1000"
                   value={formData.quantity}
                   onChange={(e) =>
-                    setFormData({ ...formData, quantity: e.target.value })
+                    setFormData({ ...formData, quantity: parseInt(e.target.value) })
                   }
                   className="h-11 bg-background/50 border-border/50 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                   required
@@ -183,7 +184,7 @@ export function AddProductForm({ onAddProduct }: AddProductFormProps) {
                   placeholder="50"
                   value={formData.pricePerUnit}
                   onChange={(e) =>
-                    setFormData({ ...formData, pricePerUnit: e.target.value })
+                    setFormData({ ...formData, pricePerUnit: parseInt(e.target.value) })
                   }
                   className="h-11 bg-background/50 border-border/50 focus:border-emerald-500/50 focus:ring-emerald-500/20"
                   required

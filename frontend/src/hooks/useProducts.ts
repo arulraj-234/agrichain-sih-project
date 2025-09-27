@@ -102,6 +102,7 @@ export const useUpdateProductState = () => {
     },
     onSuccess: (data, variables) => {
       // Invalidate related queries
+      data
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['product', variables.productId] });
       

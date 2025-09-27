@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import heroImage from "/hero-farm-bg.jpg";
 
-const LandingPage = ({ setLanding }) => {
-  const scrollToSection = (id) => {
+const LandingPage = ({ setLanding }: any) => {
+  const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 

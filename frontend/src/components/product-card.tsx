@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { Product } from '@/types'
 import { ProductStates } from '@/types'
-import { QrCode, Calendar, User, Hash, MapPin, Leaf, Package, DollarSign } from 'lucide-react'
+import { QrCode, Calendar, User, MapPin, Leaf, Package, DollarSign } from 'lucide-react'
 import QRCode from 'qrcode'
 
 interface ProductCardProps {
@@ -117,7 +117,7 @@ export function ProductCard({ product, onGenerateQR }: ProductCardProps) {
               <span className="text-muted-foreground">Harvest:</span>
             </div>
             <p className="text-sm">
-              {new Date(parseInt(product.harvestDate)).toLocaleDateString()}
+              {new Date(parseInt(product.harvestDate as any)).toLocaleDateString()}
             </p>
           </div>
         </div>

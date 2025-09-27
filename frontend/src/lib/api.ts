@@ -2,15 +2,15 @@ import axios from 'axios';
 // Import types from centralized types file
 import type {
   Product,
-  User,
+  // User,
   Transaction,
-  UserRole,
-  ProductState,
-  CreateProductData,
-  ProductCreateResponse,
-  QRGenerateResponse,
-  ProductTrackingData,
-  PaginationMeta,
+  // UserRole,
+  // ProductState,
+  // CreateProductData,
+  // ProductCreateResponse,
+  // QRGenerateResponse,
+  // ProductTrackingData,
+  // PaginationMeta,
   ApiResponse,
   LoginResponse
 } from '../types';
@@ -220,12 +220,8 @@ export const trackingAPI = {
 
 // QR Code API calls
 export const qrAPI = {
-  generateQR: async (productId: string): Promise<ApiResponse<{
-    productId: string;
-    trackingUrl: string;
-    qrCode: string;
-  }>> => {
-    const response = await api.get<ApiResponse<any>>(`/qr/generate/${productId}`);
+  generateQR: async (productId: string) => {
+    const response = await api.get(`/qr/generate/${productId}`);
     return response.data;
   },
 

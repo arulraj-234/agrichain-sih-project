@@ -10,10 +10,10 @@ interface User {
   role: 'farmer' | 'distributor' | 'retailer' | 'consumer' | 'admin';
   walletAddress?: string;
   profile?: any;
-  verified?: boolean;
+  // verified?: boolean | any;
   isActive?: boolean;
-  createdAt?: string;
-  lastLogin?: string;
+  createdAt?: string | Date;
+  lastLogin?: string | Date;
 }
 
 // Auth context type
@@ -83,10 +83,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: response.user.id,
           name: response.user.name,
           email: response.user.email,
-          role: response.user.role as any,
+          role: response.user.role as User['role'],
           walletAddress: response.user.walletAddress,
           profile: response.user.profile,
-          verified: response.user.verified,
+          // verified: response.user.verified,
           isActive: response.user.isActive,
           createdAt: response.user.createdAt,
           lastLogin: response.user.lastLogin,
@@ -130,10 +130,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: response.user.id,
           name: response.user.name,
           email: response.user.email,
-          role: response.user.role as any,
+          role: response.user.role as User['role'],
           walletAddress: response.user.walletAddress,
           profile: response.user.profile,
-          verified: response.user.verified,
+          // verified: response.user.verified,
           isActive: response.user.isActive,
           createdAt: response.user.createdAt,
           lastLogin: response.user.lastLogin,
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       // Clear local storage and state regardless of API call success
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeUser('user');
       setUser(null);
       toast.success('Logged out successfully');
     }

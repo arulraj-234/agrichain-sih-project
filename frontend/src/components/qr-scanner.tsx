@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { qrAPI, trackingAPI } from '../lib/api';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
+// import { Separator } from './ui/separator';
 import { QrCode, Package, Clock, User, MapPin, Leaf } from 'lucide-react';
 import { toast } from 'react-toastify';
-import type { ProductTrackingData, PRODUCT_STATES } from '../types';
+import type { ProductTrackingData} from '../types';
 import { formatNumber, formatCurrency, formatDate, getErrorMessage } from '../utils';
 
 const QRScanner: React.FC = () => {

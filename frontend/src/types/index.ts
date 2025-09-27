@@ -111,12 +111,12 @@ export interface Product {
   quantity: number; // Fixed: should be number, not string
   pricePerUnit: number; // Fixed: should be number, not string
   currentState: ProductState;
-  harvestDate: string | Date;
+  harvestDate: string|Date;
   origin: string;
   isOrganic: boolean;
   currentHolderId: string;
   createdBy?: string;
-  createdAt?: string | Date;
+  createdAt?: string | Date | undefined;
   updatedAt?: string | Date;
   
   // Additional fields that might come from blockchain

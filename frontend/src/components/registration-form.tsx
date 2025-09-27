@@ -34,8 +34,8 @@ import { ToastProvider, useToast } from "@/hooks/useToast";
 import LandingPage from "./LandingPage";
 
 interface LoginRegisterFormProps {
-  onLogin: (email: string, password: string) => Promise<void>;
-  onRegister: (user: any) => Promise<void>;
+  onLogin: (email: string, password: string) => Promise<boolean>;
+  onRegister: (user: any) => Promise<boolean>;
 }
 
 export function RegistrationForm({

@@ -10,7 +10,6 @@ import {
   MapPin, 
   Calendar, 
   User, 
-  Truck, 
   CheckCircle, 
   Clock, 
   Leaf, 
@@ -23,44 +22,52 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-interface ProductTrackingData {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    farmerId: string;
-    quantity: string;
-    pricePerUnit: string;
-    currentState: number;
-    harvestDate: string;
-    origin: string;
-    isOrganic: boolean;
-    currentHolderId: string;
-    createdBy: string;
-    createdAt: string;
-  };
-  transactions: any[];
-  ownershipChain: any[];
-  totalTransactions: number;
-  currentOwner: string;
-  trackingUrl: string;
-}
+// interface OwnershipChainStep {
+//   owner: string;
+//   previousOwner?: string;
+//   action?: string;
+//   timestamp?: string;
+//   from?: string;
+//   transactionId?: string;
+// }
+
+// interface ProductTrackingData {
+//   id: string;
+//   name: string;
+//   description: string;
+//   farmerId: string;
+//   quantity: string;
+//   pricePerUnit: string;
+//   currentState: number;
+//   harvestDate: string;
+//   origin: string;
+//   isOrganic: boolean;
+//   currentHolderId: string;
+//   createdBy: string;
+//   createdAt: string;
+//   productId?: string;
+//   transactions: any[];
+//   ownershipChain: OwnershipChainStep[];
+//   totalTransactions: number;
+//   currentOwner: string;
+//   trackingUrl: string;
+// }
 
 const ProductTrackingPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-  const [trackingData, setTrackingData] = useState<ProductTrackingData | null>(null);
+  const [trackingData, setTrackingData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const stateNames = ['Produced', 'Processing', 'Shipped', 'Delivered', 'Sold'];
-  const stateColors = {
+  const stateColors: Record<number, string> = {
     0: 'bg-green-500',
     1: 'bg-yellow-500', 
     2: 'bg-blue-500',
     3: 'bg-purple-500',
     4: 'bg-gray-500'
   };
-  const stateDescriptions = {
+  const stateDescriptions: Record<number, string> = {
     0: 'Product has been harvested and is ready for processing',
     1: 'Product is being processed or prepared for shipment',
     2: 'Product is in transit to its destination',
@@ -205,7 +212,7 @@ const ProductTrackingPage: React.FC = () => {
             </CardDescription>
             <div className="flex items-center justify-center gap-4 mt-4">
               <Badge 
-                className={`${stateColors[trackingData.currentState as keyof typeof stateColors]} text-white px-4 py-2 text-lg`}
+                className={`${stateColors[trackingData.currentState]} text-white px-4 py-2 text-lg`}
               >
                 {stateNames[trackingData.currentState]}
               </Badge>
@@ -288,12 +295,12 @@ const ProductTrackingPage: React.FC = () => {
             <CardContent>
               <div className="space-y-6">
                 <div className="text-center">
-                  <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full ${stateColors[trackingData.currentState as keyof typeof stateColors]} shadow-lg mb-4`}>
+                  <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full ${stateColors[trackingData.currentState]} shadow-lg mb-4`}>
                     <span className="text-2xl font-bold text-white">{trackingData.currentState + 1}</span>
                   </div>
                   <h3 className="text-2xl font-bold mb-2">{stateNames[trackingData.currentState]}</h3>
                   <p className="text-gray-600 dark:text-gray-300">
-                    {stateDescriptions[trackingData.currentState as keyof typeof stateDescriptions]}
+                    {stateDescriptions[trackingData.currentState]}
                   </p>
                 </div>
 
@@ -344,7 +351,7 @@ const ProductTrackingPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {trackingData.ownershipChain.map((step, index) => (
+              {trackingData.ownershipChain.map((step:any, index:any) => (
                 <div key={index} className="flex items-start gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-600/50 rounded-lg">
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
@@ -371,7 +378,7 @@ const ProductTrackingPage: React.FC = () => {
                     <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {formatDate(step.timestamp || step.from)}
+                        {formatDate(step.timestamp || step.from || '')}
                       </div>
                       {step.transactionId && (
                         <div className="flex items-center gap-1">

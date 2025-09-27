@@ -4,16 +4,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+// import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { Product } from '@/types'
 import type { Transaction } from '@/lib/api'
-import { ArrowRightLeft, Clock, DollarSign, User, FileText, Plus, AlertCircle } from 'lucide-react'
-import { useProducts, useTransferProduct, useProductTransactions, useMyProducts } from '@/hooks/useProducts'
+import { ArrowRightLeft, Clock, User, Plus, AlertCircle } from 'lucide-react'
+import { useTransferProduct, useProductTransactions, useMyProducts } from '@/hooks/useProducts'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'react-toastify'
 
 interface TransactionsSectionProps {
+  
   // Remove props since we'll fetch data via API
 }
 

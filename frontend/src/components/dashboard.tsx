@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { AddProductForm } from "@/components/add-product-form";
 import { useMyProducts, useCreateProduct } from "@/hooks/useProducts";
 import {
@@ -24,22 +24,21 @@ import {
   Filter,
   QrCode,
 } from "lucide-react";
-import { ProductCard } from "./product-card";
-import QRCode from "qrcode";
+// import { ProductCard } from "./product-card";
+// import QRCode from "qrcode";
 import type { Product } from "@/types";
-
 
 interface DashboardProps {
   handleGenerateQR?: (product: Product) => void;
   user?: any;
 }
 
-export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
+export function Dashboard({ handleGenerateQR, user }: DashboardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [qrModalOpen, setQrModalOpen] = React.useState(false);
-  const [qrModalProduct, setQrModalProduct] = React.useState<Product | null>(null);
-  const [qrModalDataUrl, setQrModalDataUrl] = React.useState<string>("");
+  // const [qrModalOpen, setQrModalOpen] = React.useState(false);
+  // const [qrModalProduct, setQrModalProduct] = React.useState<Product | null>(null);
+  // const [qrModalDataUrl, setQrModalDataUrl] = React.useState<string>("");
 
   // Use the real API hooks - fetch user's own products only
   const { data: productsData, isLoading, error } = useMyProducts(0, 50); // Get user's first 50 products
@@ -47,7 +46,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
 
   // Extract products from API response
   const products = productsData?.products || [];
-
+  isCreating;
   console.log("User's Products:", products);
   const filteredProducts = products.filter(
     (product: Product) =>
@@ -56,12 +55,11 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
       product.farmerId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  
-
   const totalProducts = products.length;
   const organicProducts = products.filter((p: Product) => p.isOrganic).length;
   const totalValue = products.reduce(
-    (sum: number, product: Product) => sum + (parseFloat(product.quantity) * parseFloat(product.pricePerUnit)),
+    (sum: number, product: Product) =>
+      sum + parseFloat(product.quantity as any) * parseFloat(product.pricePerUnit as any),
     0
   );
   const uniqueFarmers = new Set(products.map((p: Product) => p.farmerId)).size;
@@ -84,8 +82,14 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
   };
 
   const getStatusText = (status: number) => {
-    const statusNames = ['Produced', 'Processing', 'Shipped', 'Delivered', 'Sold'];
-    return statusNames[status] || 'Unknown';
+    const statusNames = [
+      "Produced",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Sold",
+    ];
+    return statusNames[status] || "Unknown";
   };
 
   const handleAddProduct = (productData: any) => {
@@ -101,9 +105,8 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
       isOrganic: productData.isOrganic || false,
       farmerId: productData.farmerId,
       createdBy: user.id,
-      
     };
-    
+
     createProduct(apiProductData, {
       onSuccess: () => {
         setShowAddForm(false);
@@ -111,7 +114,6 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
     });
   };
 
-  
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/80">
       <div className="container mx-auto px-4 py-8">
@@ -256,7 +258,8 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                 Failed to Load Products
               </h3>
               <p className="text-red-600">
-                {error.message || 'Something went wrong while fetching products.'}
+                {error.message ||
+                  "Something went wrong while fetching products."}
               </p>
             </CardContent>
           </Card>
@@ -266,7 +269,6 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
         {!isLoading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map((product: Product) => (
-              
               <Card
                 key={product.id}
                 className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
@@ -275,7 +277,15 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg font-semibold text-foreground mb-1">
-                        {product.name}{product.currentHolderId === user.id ? "" : <span className="bg-red-500/60 border-2 border-red-300 rounded-3xl text-white text-xs px-2 py-1 ml-2"> (SOLD)</span>}
+                        {product.name}
+                        {product.currentHolderId === user.id ? (
+                          ""
+                        ) : (
+                          <span className="bg-red-500/60 border-2 border-red-300 rounded-3xl text-white text-xs px-2 py-1 ml-2">
+                            {" "}
+                            (SOLD)
+                          </span>
+                        )}
                       </CardTitle>
                       <div className="flex items-center gap-2 mb-2">
                         {product.isOrganic && (
@@ -303,7 +313,9 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex items-center gap-2">
                       <Hash className="h-4 w-4 text-gray-400" />
-                      <span className="text-foreground">{product.farmerId}</span>
+                      <span className="text-foreground">
+                        {product.farmerId}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-400" />
@@ -320,7 +332,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400" />
                       <span className="text-foreground">
-                        {new Date(product.createdAt).toLocaleDateString()}
+                        {new Date(product.createdAt as any).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
@@ -339,7 +351,11 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                         Total value
                       </span>
                       <span className="text-lg font-bold text-foreground">
-                        ₹{(parseFloat(product.quantity) * parseFloat(product.pricePerUnit)).toLocaleString()}
+                        ₹
+                        {(
+                          parseFloat(product.quantity as any) *
+                          parseFloat(product.pricePerUnit as any)
+                        ).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -348,7 +364,9 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                     <Button
                       variant="outline"
                       className="w-full h-10 flex items-center justify-center gap-2 rounded-xl border-blue-500/40 text-blue-600 hover:bg-blue-50 hover:scale-[1.01] transition-all"
-                      onClick={() => handleGenerateQR && handleGenerateQR(product)}
+                      onClick={() =>
+                        handleGenerateQR && handleGenerateQR(product)
+                      }
                     >
                       <QrCode className="h-4 w-4" />
                       Get QR Code
@@ -381,7 +399,7 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
                   <div className="p-6">
-                    <AddProductForm onAddProduct={handleAddProduct} isLoading={isCreating} />
+                    <AddProductForm onAddProduct={handleAddProduct} />
                   </div>
                 </DialogContent>
               </Dialog>
@@ -390,6 +408,5 @@ export function Dashboard({ handleGenerateQR ,user}: DashboardProps) {
         )}
       </div>
     </div>
-      
   );
 }
