@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Sidebar } from "@/components/sidebar";
 // import { ProductCard } from "@/components/product-card";
 // import { AddProductForm } from "@/components/add-product-form";
@@ -38,6 +38,7 @@ function MainDashboard() {
   const [qrError, setQrError] = React.useState<string | null>(null);
 
   const [productsLoading, setProductsLoading] = React.useState(false);
+  const [Demo, setDemo] = useState(false)
   const { login, register, user, isAuthenticated, logout, loading } = useAuth();
 
   const { data: LoadProducts, isLoading } = useProducts();
@@ -194,8 +195,8 @@ function MainDashboard() {
     }
   };
 
-  if (!isAuthenticated) {
-    return <RegistrationForm onLogin={login} onRegister={register} />;
+  if (!isAuthenticated && !Demo) {
+    return <RegistrationForm onLogin={login} onRegister={register} setDemo={setDemo} />;
   }
 
   const renderContent = () => {

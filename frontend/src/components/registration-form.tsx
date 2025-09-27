@@ -36,11 +36,13 @@ import LandingPage from "./LandingPage";
 interface LoginRegisterFormProps {
   onLogin: (email: string, password: string) => Promise<boolean>;
   onRegister: (user: any) => Promise<boolean>;
+  setDemo: (demo: boolean) => void;
 }
 
 export function RegistrationForm({
   onLogin,
   onRegister,
+  setDemo
 }: LoginRegisterFormProps) {
   const [mode, setMode] = React.useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = React.useState(false);
@@ -295,6 +297,24 @@ export function RegistrationForm({
                 <div className="flex items-center space-x-2">
                   <LogIn className="h-4 w-4" />
                   <span>Sign In</span>
+                </div>
+              )}
+            </Button>
+            <Button
+              type="submit"
+              className={`w-full h-11 sm:h-12 bg-gradient-to-r ${currentRoleColor} from-yellow-500 to-yellow-700 hover:from-amber-600 hover:to-amber-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
+              disabled={isLoading}
+              onClick={() => {setDemo(true)}}
+            >
+              {isLoading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  {/* <LogIn className="h-4 w-4" /> */}
+                  <span>Demo</span>
                 </div>
               )}
             </Button>
