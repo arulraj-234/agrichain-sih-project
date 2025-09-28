@@ -13,15 +13,16 @@ import {
   Leaf,
   Heart,
   Globe,
-  ChevronDown,
+  // ChevronDown,
   Plus,
 } from "lucide-react";
 import heroImage from "/hero-farm-bg.jpg";
+// import { TypingAnimation } from "@/components/ui/typing-animation"
 
 const LandingPage = ({ setLanding }: any) => {
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToSection = (id: string) => {
+  //   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  // };
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -38,21 +39,22 @@ const LandingPage = ({ setLanding }: any) => {
       {/* Hero Section */}
       <section
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        style={{
+          style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${heroImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          // opacity: 0.8,
         }}
       >
         <div className="relative z-10 text-center text-white px-6 max-w-6xl mx-auto">
           <motion.h1
-            className="text-6xl md:text-8xl font-bold mb-8 leading-tight"
+            className="text-6xl md:text-8xl font-bold mb-8 leading-tight color-white"
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            🌱 Revolutionizing Agriculture
-            <span className="block bg-gradient-to-r from-[#2563eb] to-[#22c55e] bg-clip-text text-transparent">
+             Revolutionizing Agriculture
+            <span className="block bg-gradient-to-r from-[#e6f47bff] to-[#8fa90eff] text-transparent bg-clip-text">
               with Blockchain Transparency
             </span>
           </motion.h1>
@@ -75,10 +77,11 @@ const LandingPage = ({ setLanding }: any) => {
           >
             <Button
               size="lg"
-              className="bg-gradient-to-r from-[#2563eb] to-[#22c55e] text-white px-12 py-6 text-xl font-semibold rounded-full hover:opacity-90 transition"
-              onClick={() => scrollToSection("features")}
+              className="bg-[#8FA31E] text-white px-12 py-6 text-xl font-semibold rounded-full hover:bg-white hover:text-[#8FA31E] transition"
+              // onClick={() => scrollToSection("features")}
+              onClick={() => setLanding(false)}
             >
-              ➡️ Get Started Today <ChevronDown className="ml-2 w-6 h-6" />
+               Get Started Now →
             </Button>
           </motion.div>
         </div>
@@ -109,8 +112,8 @@ const LandingPage = ({ setLanding }: any) => {
             viewport={{ once: true }}
           >
             <motion.div variants={fadeInUp}>
-              <Card className="p-8 text-center hover:shadow-xl transition border-0 bg-gradient-to-b from-white to-blue-50">
-                <div className="w-20 h-20 bg-gradient-to-tr from-[#2563eb] to-[#22c55e] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Card className="p-8 text-center hover:shadow-xl transition border-0 bg-gradient-to-b from-white to-[#f8fbe7]">
+                <div className="w-20 h-20 bg-[#C6D870] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Shield className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Blockchain Security</h3>
@@ -122,8 +125,8 @@ const LandingPage = ({ setLanding }: any) => {
             </motion.div>
 
             <motion.div variants={fadeInUp}>
-              <Card className="p-8 text-center hover:shadow-xl transition border-0 bg-gradient-to-b from-white to-green-50">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Card className="p-8 text-center hover:shadow-xl transition border-0 bg-gradient-to-b from-white to-[#f8fbe7]">
+                <div className="w-20 h-20 bg-[#C6D870] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <DollarSign className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Transparent Pricing</h3>
@@ -135,8 +138,8 @@ const LandingPage = ({ setLanding }: any) => {
             </motion.div>
 
             <motion.div variants={fadeInUp}>
-              <Card className="p-8 text-center hover:shadow-xl transition border-0 bg-gradient-to-b from-white to-green-50">
-                <div className="w-20 h-20 bg-gradient-to-tr from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Card className="p-8 text-center hover:shadow-xl transition border-0 bg-gradient-to-b from-white to-[#f8fbe7]">
+                <div className="w-20 h-20 bg-[#C6D870] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <QrCode className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">QR Code Access</h3>
@@ -205,7 +208,7 @@ const LandingPage = ({ setLanding }: any) => {
                 variants={fadeInUp}
                 className="text-center relative"
               >
-                <div className="w-24 h-24 bg-gradient-to-br from-[#2563eb] via-[#22c55e] to-[#16a34a] shadow-lg rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-[#C6D870] shadow-lg rounded-full flex items-center justify-center mx-auto mb-6">
                   <step.icon className="w-12 h-12 text-white" />
                 </div>
                 <h3 className="text-xl font-bold mb-3">{step.title}</h3>
@@ -267,7 +270,7 @@ const LandingPage = ({ setLanding }: any) => {
             ].map((benefit, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Card className="p-6 text-center hover:shadow-lg transition h-full bg-white text-black">
-                  <div className="w-16 h-16 bg-gradient-to-tr from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[#C6D870] rounded-full flex items-center justify-center mx-auto mb-4">
                     <benefit.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-lg font-bold mb-3">{benefit.title}</h3>
@@ -324,7 +327,7 @@ const LandingPage = ({ setLanding }: any) => {
               <motion.div key={index} variants={fadeInUp}>
                 <Card className="p-6 hover:shadow-lg transition bg-white text-black">
                   <div className="flex items-start gap-4">
-                    <div className="w-6 h-6 bg-gradient-to-tr from-[#2563eb] to-[#22c55e] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <div className="w-6 h-6 bg-[#C6D870] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <Plus className="w-3 h-3 text-white" />
                     </div>
                     <div>
@@ -340,8 +343,31 @@ const LandingPage = ({ setLanding }: any) => {
       </section>
 
       {/* CTA */}
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-[#2563eb] via-[#22c55e] to-[#16a34a] relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="min-h-screen w-full flex items-center justify-center overflow-hidden relative bg-white">
+        {/* <div className="absolute inset-0 z-0"
+    style={{
+      background: "#ffffff",
+      backgroundImage: `
+        radial-gradient(
+          circle at top center,         
+          #EFF5D2,
+          transparent 70%
+        )
+      `,
+      filter: "blur(80px)",
+      backgroundRepeat: "no-repeat",
+    }}
+/> */}
+  <div
+    className="absolute inset-0 z-0"
+    style={{
+      backgroundImage: `
+        radial-gradient(circle at center, #EFF5D2, transparent)
+      `,
+    }}
+  />
+     
+
         <motion.div
           className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
@@ -350,18 +376,18 @@ const LandingPage = ({ setLanding }: any) => {
           viewport={{ once: true }}
         >
           <motion.h2
-            className="text-6xl md:text-7xl font-bold mb-8 leading-tight"
+            className="text-6xl md:text-7xl font-bold mb-8 leading-tight text-[#556B2F]"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            🍅 Trust Your Food.
-            <span className="block">Empower Farmers.</span>
-            <span className="block">Transform Agriculture.</span>
+             Trust Your Food.
+            <span className="block text-[#556B2F]">Empower Farmers.</span>
+            <span className="block text-[#556B2F]">Transform Agriculture.</span>
           </motion.h2>
 
           <motion.p
-            className="text-xl md:text-2xl mb-12 opacity-90"
+            className="text-xl md:text-2xl mb-12 opacity-90 text-[#556B2F]"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
@@ -377,10 +403,10 @@ const LandingPage = ({ setLanding }: any) => {
           >
             <Button
               size="lg"
-              className="bg-white text-green-700 px-16 py-8 text-2xl font-bold rounded-full hover:bg-gray-100 transition"
+              className="text-white bg-[#8FA31E] px-16 py-8 text-2xl font-bold rounded-full hover:bg-white hover:text-[#8FA31E] transition"
               onClick={() => setLanding(false)}
             >
-              ➡️ Get Started Now →
+               Get Started Now →
             </Button>
           </motion.div>
         </motion.div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { MagicCard } from "@/components/ui/magic-card"
 import {
-  Card,
+  // Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -85,7 +86,7 @@ export function RegistrationForm({
       await onLogin(loginData.email, loginData.password);
 
       toast({
-        title: "Welcome back! 🎉",
+        title: "Welcome back!",
         description: "You have successfully logged in.",
         type: "success",
       });
@@ -153,7 +154,7 @@ export function RegistrationForm({
       });
 
       toast({
-        title: "Account Created Successfully! 🎉",
+        title: "Account Created Successfully!",
         description: `Welcome to our platform, ${registerData.name}!`,
         type: "success",
       });
@@ -182,31 +183,36 @@ export function RegistrationForm({
     }
   };
 
-  const getRoleColor = (role : any) => {
-    switch (role) {
-      case "farmer":
-        return "from-green-500 to-green-600";
-      case "trader":
-        return "from-blue-500 to-blue-600";
-      case "retailer":
-        return "from-purple-500 to-purple-600";
-    }
-  };
+  // const getRoleColor = (role : any) => {
+  //   switch (role) {
+  //     case "farmer":
+  //       return "from-green-500 to-green-600";
+  //     case "trader":
+  //       return "from-blue-500 to-blue-600";
+  //     case "retailer":
+  //       return "from-purple-500 to-purple-600";
+  //   }
+  // };
 
-  const currentRoleColor = getRoleColor(
-    mode === "register" ? registerData.role : "farmer"
-  );
+  // const currentRoleColor = getRoleColor(
+  //   mode === "register" ? registerData.role : "farmer"
+  // );
 
    if(Landing){
     return <LandingPage setLanding={setLanding}/>
    }
   return (
- <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+ <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 absolute inset-0 z-0"
+    style={{
+      backgroundImage: `
+        radial-gradient(circle at center, #EFF5D2, transparent)
+      `,
+    }}>
   <div className="w-full max-w-md sm:max-w-lg lg:max-w-2xl">
-    <Card className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-xl backdrop-blur-sm">
+    <MagicCard className="border-border/50 bg-gradient-to-br from-card to-card/80 shadow-xl backdrop-blur-sm">
       <CardHeader className="text-center pb-6 px-4 sm:px-6 lg:px-8">
         <div
-          className={`mx-auto w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-r ${currentRoleColor} flex items-center justify-center mb-4`}
+          className={`mx-auto w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-[#8FA31E] flex items-center justify-center mb-4 mt-4 text-white`}
         >
           {mode === "login" ? (
             <LogIn className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
@@ -215,7 +221,7 @@ export function RegistrationForm({
           )}
         </div>
         <CardTitle
-          className={`text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r ${currentRoleColor} bg-clip-text text-transparent`}
+          className={`text-2xl sm:text-3xl lg:text-4xl font-bold bg-[#8FA31E] bg-clip-text text-transparent`}
         >
           {mode === "login" ? "Welcome Back" : "Create Account"}
         </CardTitle>
@@ -285,7 +291,7 @@ export function RegistrationForm({
 
             <Button
               type="submit"
-              className={`w-full h-11 sm:h-12 bg-gradient-to-r ${currentRoleColor} hover:from-blue-600 hover:to-blue-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
+              className={`w-full h-11 sm:h-12 bg-[#8FA31E] text-white hover:bg-[#84994F] text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
               disabled={isLoading}
             >
               {isLoading ? (
@@ -302,7 +308,7 @@ export function RegistrationForm({
             </Button>
             <Button
               type="submit"
-              className={`w-full h-11 sm:h-12 bg-gradient-to-r ${currentRoleColor} from-yellow-500 to-yellow-700 hover:from-amber-600 hover:to-amber-700 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
+              className={`w-full h-11 sm:h-12 bg-[#FCB53B] hover:bg-[#EDA35A] text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
               disabled={isLoading}
               onClick={() => {setDemo(true)}}
             >
@@ -320,12 +326,12 @@ export function RegistrationForm({
             </Button>
 
             <div className="text-center pt-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-lg text-gray-600">
                 Don't have an account?{" "}
                 <button
                   type="button"
                   onClick={() => setMode("register")}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-[#556B2F] text-lg font-semibold"
                 >
                   Sign up here
                 </button>
@@ -354,7 +360,7 @@ export function RegistrationForm({
                 <SelectTrigger className="w-full h-11 sm:h-12">
                   <SelectValue placeholder="ROLE" />
                 </SelectTrigger>
-                <SelectContent className="bg-background/50 border-border/50 focus:border-blue-500/50 focus:ring-blue-500/20">
+                <SelectContent className="bg-background/100 border-border/50 focus:border-blue-500/50 focus:ring-blue-500/20">
                   <SelectItem value="farmer">🚜 Farmer</SelectItem>
                   <SelectItem value="trader">🚛 Trader</SelectItem>
                   <SelectItem value="retailer">🏪 Retailer</SelectItem>
@@ -536,7 +542,7 @@ export function RegistrationForm({
 
             <Button
               type="submit"
-              className={`w-full h-11 sm:h-12 bg-gradient-to-r ${currentRoleColor} hover:opacity-90 text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
+              className={`w-full h-11 sm:h-12 bg-[#8FA31E] text-white hover:bg-[#84994F] text-white font-medium transition-all duration-200 transform hover:scale-[1.02] text-sm sm:text-base`}
               disabled={isLoading}
             >
               {isLoading ? (
@@ -547,18 +553,18 @@ export function RegistrationForm({
               ) : (
                 <div className="flex items-center space-x-2">
                   {getRoleIcon(registerData.role)}
-                  <span>Create Account</span>
+                  <span >Create Account</span>
                 </div>
               )}
             </Button>
 
             <div className="text-center pt-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-lg text-gray-600">
                 Already have an account?{" "}
                 <button
                   type="button"
                   onClick={() => setMode("login")}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-[#556B2F] text-lg font-semibold"
                 >
                   Sign in here
                 </button>
@@ -567,7 +573,7 @@ export function RegistrationForm({
           </form>
         )}
       </CardContent>
-    </Card>
+    </MagicCard>
     <ToastProvider />
   </div>
 </div>
